@@ -61,7 +61,37 @@ class FeatureDNN(nn.Module):
 
     def forward(self, x):
         return self.model(x)
-    
+
+class RNNModel(nn.Module):
+    def __init__(self, input_size, hidden_size=64, num_layers=2):
+        super(RNNModel, self).__init__()
+        self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
+        self.fc = nn.Linear(hidden_size, 1)
+
+    def forward(self, x):
+        output, _ = self.rnn(x)
+        return self.fc(output[:, -1, :])  # Use last time step output
+
+class LSTMModel(nn.Module):
+    def __init__(self, input_size, hidden_size=64, num_layers=2):
+        super(LSTMModel, self).__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
+        self.fc = nn.Linear(hidden_size, 1)
+
+    def forward(self, x):
+        output, _ = self.lstm(x)
+        return self.fc(output[:, -1, :])  # Use last time step output
+
+class GRUModel(nn.Module):
+    def __init__(self, input_size, hidden_size=64, num_layers=2):
+        super(GRUModel, self).__init__()
+        self.gru = nn.GRU(input_size, hidden_size, num_layers, batch_first=True)
+        self.fc = nn.Linear(hidden_size, 1)
+
+    def forward(self, x):
+        output, _ = self.gru(x)
+        return self.fc(output[:, -1, :])  # Use last time step output
+      
 def get_model(model_name, input_size):
     if model_name == "SimpleDNN":
         return SimpleDNN(input_size)
@@ -71,5 +101,11 @@ def get_model(model_name, input_size):
         return CNN1D(input_size)
     elif model_name == "FeatureDNN":
         return FeatureDNN(input_size)
+    elif model_name == "RNN":
+        return RNNModel(input_size)
+    elif model_name == "LSTM":
+        return LSTMModel(input_size)
+    elif model_name == "GRU":
+        return GRUModel(input_size)
     else:
         raise ValueError("Unknown model name")

@@ -2,10 +2,10 @@ from train import train_model
 from datetime import datetime
 
 if __name__ == "__main__":
-    model_name = "FeatureDNN"  # Options: "SimpleDNN", "DeepDNN", "CNN1D", "FeatureDNN"
+    model_name = "SimpleDNN"  # Options: "SimpleDNN", "DeepDNN", "CNN1D", "FeatureDNN", "RNN", "LSTM", "GRU"
     loss_name = "MSE"  # Options: "MSE", "Huber", "MAE"
     data_dir = "pes_data/"  # Folder containing PES files
-    feature_type = "PSD"  # Options: "PSD", "STFT", "MFCC", None
+    feature_type = "STFT" # Options: "PSD", "STFT", "MFCC", None
     epochs = 200
     batch_size = 16
     learning_rate = 0.001

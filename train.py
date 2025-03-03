@@ -15,7 +15,7 @@ def train_model(model_name, loss_name, data_dir, feature_type=None, epochs=50, b
     save_path = os.path.join("weights", save_path)
 
     # Load dataset and split into training & validation sets (80% train, 20% val)
-    dataset = PESDataset(data_dir, feature_type=feature_type)
+    dataset = PESDataset(data_dir, model_name=model_name, feature_type=feature_type)
     train_size = int(0.8 * len(dataset))
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
@@ -25,6 +25,7 @@ def train_model(model_name, loss_name, data_dir, feature_type=None, epochs=50, b
 
     # input_size = dataset.max_length  # Fixed-length input
     input_size = len(train_dataset[0][0]) 
+    print(input_size)
     model = get_model(model_name, input_size)
     loss_function = get_loss_function(loss_name)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)

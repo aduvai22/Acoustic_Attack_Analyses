@@ -4,7 +4,9 @@ from torch.utils.data import Dataset
 import os
 import re  # Regular expressions for filename parsing
 import scipy.signal as signal
-import librosa  # For MFCC computation
+import librosa
+
+import torch.share  # For MFCC computation
 
 # Function to convert hexadecimal to signed 16-bit integer
 def hex_to_signed_16bit(hex_str):
@@ -34,21 +36,22 @@ def compute_psd(pes_signal, fs=1000):  # Assume sampling rate 1000 Hz
 
 def compute_stft(pes_signal, fs=1000):
     f, t, Zxx = signal.stft(pes_signal, fs=fs, nperseg=256)
-    return np.abs(Zxx).flatten()  # Returns STFT magnitude spectrum
+    return np.abs(Zxx) #.flatten()  # Returns STFT magnitude spectrum
 
 def compute_mfcc(pes_signal, fs=1000, n_mfcc=13):
     pes_signal = pes_signal.astype(float)  # Ensure proper dtype
     mfccs = librosa.feature.mfcc(y=pes_signal, sr=fs, n_mfcc=n_mfcc)
-    return mfccs.flatten()  # Returns MFCCs as a 1D feature vector
+    return mfccs #.flatten()  # Returns MFCCs
 
 
 class PESDataset(Dataset):
-    def __init__(self, data_dir, max_length=500, feature_type=None):
+    def __init__(self, data_dir, model_name=None, max_length=500, feature_type=None):
         self.data_dir = data_dir
         self.max_length = max_length
         self.files = []
         self.labels = []
         self.feature_type = feature_type
+        self.model_name = model_name
 
         # Regex pattern to extract SPL value from filenames
         pattern = re.compile(r'attack_(\d+)')
@@ -80,6 +83,16 @@ class PESDataset(Dataset):
             else:
                 raise ValueError("Invalid feature type!")
             
+            if self.model_name == "RNN" or self.model_name == "LSTM" or self.model_name == "GRU":
+                if self.feature_type == "PSD":
+                    features = features.reshape(-1, 1)
+                else:
+                    features = features.T
+            else:
+                if not self.feature_type == "PSD":
+                    features = features.flatten()
+            
+            # print(f"Feature tensor shape: {np.shape(features)}")
             return torch.tensor(features, dtype=torch.float32), torch.tensor(self.labels[idx], dtype=torch.float32)
         
         else:

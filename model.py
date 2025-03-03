@@ -48,6 +48,20 @@ class CNN1D(nn.Module):
         x = self.relu(self.fc1(x))
         return self.fc2(x)
 
+class FeatureDNN(nn.Module):
+    def __init__(self, input_size):
+        super(FeatureDNN, self).__init__()
+        self.model = nn.Sequential(
+            nn.Linear(input_size, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 1)
+        )
+
+    def forward(self, x):
+        return self.model(x)
+    
 def get_model(model_name, input_size):
     if model_name == "SimpleDNN":
         return SimpleDNN(input_size)
@@ -55,5 +69,7 @@ def get_model(model_name, input_size):
         return DeepDNN(input_size)
     elif model_name == "CNN1D":
         return CNN1D(input_size)
+    elif model_name == "FeatureDNN":
+        return FeatureDNN(input_size)
     else:
         raise ValueError("Unknown model name")

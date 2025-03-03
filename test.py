@@ -7,9 +7,9 @@ from model import get_model
 from dataset import PESDataset
 from metrics import calculate_metrics
 
-def test_model(model_name, data_dir, model_path="best_model.pth"):
+def test_model(model_name, data_dir, feature_type=None, model_path="best_model.pth"):
     # Load dataset (same as training)
-    dataset = PESDataset(data_dir)
+    dataset = PESDataset(data_dir, feature_type=feature_type)
 
     # Use the validation portion as the test set
     test_percentage = 0.5
@@ -18,7 +18,8 @@ def test_model(model_name, data_dir, model_path="best_model.pth"):
     _, test_dataset = random_split(dataset, [train_size, test_size])
 
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
-    input_size = dataset.max_length
+    input_size = len(test_dataset[0][0]) 
+    # input_size = dataset.max_length
 
     # Load the trained model
     model = get_model(model_name, input_size)
@@ -63,7 +64,8 @@ def test_model(model_name, data_dir, model_path="best_model.pth"):
 if __name__ == "__main__":
     data_dir = "pes_data/"
 
-    model_name = "SimpleDNN"  # Set model type
-    model_path = "weights/SimpleDNN_20250303_123100.pth" # Set model path
+    model_name = "FeatureDNN"  # Set model type
+    feature_type = "PSD"
+    model_path = "weights/FeatureDNN_20250303_134117.pth" # Set model path
 
-    test_model(model_name, data_dir, model_path)
+    test_model(model_name, data_dir, feature_type, model_path)

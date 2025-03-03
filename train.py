@@ -7,7 +7,7 @@ from model import get_model
 from loss import get_loss_function
 from dataset import PESDataset
 
-def train_model(model_name, loss_name, data_dir, epochs=50, batch_size=16, learning_rate=0.001, patience=10, save_path="best_model.pth"):
+def train_model(model_name, loss_name, data_dir, feature_type=None, epochs=50, batch_size=16, learning_rate=0.001, patience=10, save_path="best_model.pth"):
 
     # Create directory to save weights
     if not os.path.exists("weights"):
@@ -15,7 +15,7 @@ def train_model(model_name, loss_name, data_dir, epochs=50, batch_size=16, learn
     save_path = os.path.join("weights", save_path)
 
     # Load dataset and split into training & validation sets (80% train, 20% val)
-    dataset = PESDataset(data_dir)
+    dataset = PESDataset(data_dir, feature_type=feature_type)
     train_size = int(0.8 * len(dataset))
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
@@ -23,7 +23,8 @@ def train_model(model_name, loss_name, data_dir, epochs=50, batch_size=16, learn
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-    input_size = dataset.max_length  # Fixed-length input
+    # input_size = dataset.max_length  # Fixed-length input
+    input_size = len(train_dataset[0][0]) 
     model = get_model(model_name, input_size)
     loss_function = get_loss_function(loss_name)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)

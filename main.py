@@ -11,7 +11,7 @@ if __name__ == "__main__":
     learning_rate = 0.001
     patience = 20  # Stop if no improvement for 10 epochs
 
-    current_time = filename1 = datetime.now().strftime("%Y%m%d_%H%M%S")
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_path = f"{model_name}_{current_time}.pth"  # Where to save the best model
 
     train_model(model_name, loss_name, data_dir, feature_type, epochs, batch_size, learning_rate, patience, save_path)
